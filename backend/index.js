@@ -1,62 +1,9 @@
-// const express = require("express");
-// const bodyParser = require("body-parser");
-// const nodemailer = require("nodemailer");
-// const cors = require("cors");
-
-// const app = express();
-// app.use(bodyParser.json());
-// app.use(cors());
-
-// // Configure nodemailer
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: "vishalmeharwade1@gmail.com", // Replace with your email
-//     pass: "nwry ujsk pgau nkvf", // Replace with your email password or app-specific password
-//   },
-// });
-
-// // Endpoint to send OTP
-// app.post("/send-otp", (req, res) => {
-//   const { email } = req.body;
-//   if (!email) {
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "Email is required" });
-//   }
-
-//   const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6-digit OTP
-
-//   const mailOptions = {
-//     from: "vishalmeharwade1@gmail.com",
-//     to: email,
-//     subject: "Your OTP for Signup",
-//     text: `Your OTP is: ${otp}`,
-//   };
-
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error("Error sending OTP:", error);
-//       return res
-//         .status(500)
-//         .json({ success: false, message: "Failed to send OTP" });
-//     }
-//     console.log("Email sent:", info.response);
-//     res.json({ success: true, message: "OTP sent successfully", otp }); // In a real app, don't send OTP in response!
-//   });
-// });
-
-// // Start the server
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
@@ -65,19 +12,16 @@ app.use(cors());
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "vishalmeharwade1@gmail.com", // Your email
-    pass: "nwry ujsk pgau nkvf", // Your app-specific password
+    user: process.env.email, // Your email
+    pass: process.env.password, // Your app-specific password
   },
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://vishalmeharwade1:aPFQfozX4obSpC43@cluster0.lqvmb.mongodb.net/",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(process.env.mongoDB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
@@ -101,7 +45,7 @@ app.post("/send-otp", (req, res) => {
   otpStore[email] = otp;
 
   const mailOptions = {
-    from: "vishalmeharwade1@gmail.com",
+    from: process.env.email,
     to: email,
     subject: "Your OTP for Signup",
     text: `
